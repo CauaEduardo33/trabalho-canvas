@@ -3,7 +3,10 @@ var canvas = document.querySelector('canvas');
 canvas.width = window.innerWidth-20;
 canvas.height = window.innerHeight-20;
 
+console.log(canvas.height);
 var teclas = {};
+
+var previous_MouseY=0;
 var MouseX = 0;
 var MouseY = 0;
 
@@ -16,78 +19,104 @@ document.addEventListener("keyup", (event) =>{
 });
 
 document.addEventListener("mousemove", function(event){
+    previous_MouseY = MouseY;
     const rect = canvas.getBoundingClientRect();
     MouseX = event.clientX - rect.left;
     MouseY = event.clientY - rect.top;
 });
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 var c = canvas.getContext('2d');
 
-const MAX_DX = 30;
-const MAX_DY = -50;
+const MAX_Velocidade = 300;
 const pessoa_altura = 300;
 const pessoa_largura = 100;
 
-var y_bola = canvas.height - 310;
-var x_bola = 70;
 
-var x_bola_previo=200;
-var y_bola_previo=200;
+
 
 var tamanhobola = 10; 
 
 var y_pessoa = canvas.height - 300;
 var x_pessoa = 20;
 
-var dx=0;
-var dy=0;
+var y_bola = canvas.height - y_pessoa/2;
+var x_bola = 100+tamanhobola;
+var x_bola_previo=200;
+var y_bola_previo=200;
+
+var x_centro = x_pessoa+100;
+var y_centro = y_pessoa+ pessoa_altura/2;
+var radius = 10;
+var angle=0;
+var d_vetor= 0;
+var dx_bola=0;
+var dy_bola=0;
 
 var j_was_pressed = false;
 var preparou= false;
 
 function gravidade(){
-    dy+= 1.5;
+    dy_bola+= 1.5;
 }
 
 function Atrito(){
-    if( Math.abs(dx)>0.5){
-        if((Math.abs(dx)-0.15)<0.5) dx=0;
-        else if(dx<0) dx = dx+0.15;
-        else dx = dx-0.15;
-        console.log(dx);
+    if( Math.abs(dx_bola)>0.5){
+        if((Math.abs(dx_bola)-0.15)<0.5) dx_bola=0;
+        else if(dx_bola<0) dx_bola = dx_bola+0.15;
+        else dx_bola = dx_bola-0.15;
+        console.log(dx_bola);
     }
     
 }
 
 function preparandoJogada(){
-   if(dx < MAX_DX) dx+=1;
+    angle+= (previous_MouseY- MouseY)*0.1;
+    console.log("angulo:");
+    console.log(angle);
+    x_bola_previo = x_bola
+    y_bola_previo = y_bola;
 
-   if(dy< Math.abs(MAX_DY)) dy -= 1;
+    x_bola = x_centro + radius*Math.cos(angle);
+    y_bola = y_centro + radius*Math.sin(angle);
+    
+    
+
+    console.log("y_bola:" + y_bola);
+    
+
+
+    if(d_vetor<MAX_Velocidade){
+        d_vetor+=10;
+    }
+
+    dx_bola = Math.cos(angle)*d_vetor;
+    dy_bola = Math.sin(angle)*d_vetor;
        
 }
 
 function Arremesso(){
 
     if(((x_bola + tamanhobola) >= canvas.width || x_bola <=0) && (x_bola_previo+tamanhobola)<canvas.width && x_bola_previo>0){
-        if(Math.abs(dx-0.50*dx)<0.3 ) dx=0;
-        else  dx  = -dx + 0.50*dx;
-        console.log(dx);
+        if(Math.abs(dx_bola-0.50*dx_bola)<0.3 ) dx_bola=0;
+        else  dx_bola  = -dx_bola + 0.50*dx_bola;
+        console.log(dx_bola);
     }
        
     if(( y_bola <=0 || (y_bola + tamanhobola) >= canvas.height) && (y_bola_previo+tamanhobola)<canvas.height && y_bola_previo>0){
-        if(Math.abs(dy-0.50*dy)<0.3 && (y_bola + tamanhobola)>=canvas.height) dy=0; 
-        else dy = -dy + 0.50*dy;
-        console.log(dy);
+        if(Math.abs(dy_bola-0.50*dy_bola)<0.3 && (y_bola + tamanhobola)>=canvas.height) dy_bola=0; 
+        else dy_bola = -dy_bola + 0.50*dy_bola;
+        console.log(dy_bola);
         
     }
 
     x_bola_previo = x_bola;
     y_bola_previo = y_bola;
-    x_bola += dx;
-    y_bola += dy;
+    x_bola += dx_bola;
+    y_bola += dy_bola;
 
-    console.log(dy);
-     console.log(dx);
+    
 }
 
 
@@ -112,10 +141,9 @@ function animate(){
 
 
    else if(teclas["j"] || teclas["J"]){
-        setTimeout(() => {
-            preparandoJogada();
-        }, 500);
-      j_was_pressed = true;
+    preparandoJogada();    
+    sleep(500);
+    j_was_pressed = true;
     }
 
     else if(j_was_pressed){ 
