@@ -9,6 +9,7 @@ var teclas = {};
 var previous_MouseY=0;
 var MouseX = 0;
 var MouseY = 0;
+var primeiro_movimento = true;
 
 document.addEventListener("keydown", (event) =>{
     teclas[event.key] = true;
@@ -23,20 +24,24 @@ document.addEventListener("mousemove", function(event){
     const rect = canvas.getBoundingClientRect();
     MouseX = event.clientX - rect.left;
     MouseY = event.clientY - rect.top;
+    if(primeiro_movimento){
+        previous_MouseY = MouseY;
+        primeiro_movimento = false;
+    }
 });
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 var c = canvas.getContext('2d');
 
-const MAX_Velocidade = 300;
+const MAX_Velocidade = 200;
 const pessoa_altura = 300;
 const pessoa_largura = 100;
 
 
 
 
-var tamanhobola = 10; 
+var tamanhobola = 25; 
 
 var y_pessoa = canvas.height - 300;
 var x_pessoa = 20;
@@ -48,7 +53,7 @@ var y_bola_previo=200;
 
 var x_centro = x_pessoa+100;
 var y_centro = y_pessoa+ pessoa_altura/2;
-var radius = 10;
+var radius = 50;
 var angle=0;
 var d_vetor= 0;
 var dx_bola=0;
@@ -72,7 +77,9 @@ function Atrito(){
 }
 
 function preparandoJogada(){
-    angle+= (previous_MouseY- MouseY)*0.1;
+    
+    angle+= (MouseY-previous_MouseY)*0.01;
+    previous_MouseY = MouseY;
     console.log("angulo:");
     console.log(angle);
     x_bola_previo = x_bola
@@ -80,19 +87,32 @@ function preparandoJogada(){
 
     x_bola = x_centro + radius*Math.cos(angle);
     y_bola = y_centro + radius*Math.sin(angle);
-    
-    
 
-    console.log("y_bola:" + y_bola);
     
-
 
     if(d_vetor<MAX_Velocidade){
-        d_vetor+=10;
+        d_vetor+=1;
     }
 
     dx_bola = Math.cos(angle)*d_vetor;
     dy_bola = Math.sin(angle)*d_vetor;
+
+    c.fillStyle = "white";
+
+    for(let i=1; i<=30; i++){
+       
+        let t = i*0.3;
+
+        let bola_preview_direcao_x;
+        let bola_preview_direcao_y;
+
+        bola_preview_direcao_x = dx_bola*t; 
+        bola_preview_direcao_y = dy_bola*t + 1.5*(t*t)/2;
+
+        c.beginPath();
+        c.arc(x_bola+bola_preview_direcao_x, y_bola+bola_preview_direcao_y, tamanhobola, 0, Math.PI*2);
+        c.fill();
+    }
        
 }
 
@@ -105,7 +125,7 @@ function Arremesso(){
     }
        
     if(( y_bola <=0 || (y_bola + tamanhobola) >= canvas.height) && (y_bola_previo+tamanhobola)<canvas.height && y_bola_previo>0){
-        if(Math.abs(dy_bola-0.50*dy_bola)<0.3 && (y_bola + tamanhobola)>=canvas.height) dy_bola=0; 
+        if(Math.abs(dy_bola-0.50*dy_bola)<0.5 && (y_bola + tamanhobola)>=canvas.height) dy_bola=0; 
         else dy_bola = -dy_bola + 0.50*dy_bola;
         console.log(dy_bola);
         
