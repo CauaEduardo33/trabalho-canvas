@@ -46,8 +46,10 @@ var tamanhobola = 25;
 var y_pessoa = canvas.height - 300;
 var x_pessoa = 20;
 
-var y_bola = canvas.height - y_pessoa/2;
-var x_bola = 100+tamanhobola;
+const posicao_inicial_bola_y = canvas.height - y_pessoa/2
+var y_bola = posicao_inicial_bola_y;
+const posicao_inicial_bola_x = 100+tamanhobola;
+var x_bola = posicao_inicial_bola_x;
 var x_bola_previo=200;
 var y_bola_previo=200;
 
@@ -59,8 +61,21 @@ var d_vetor= 0;
 var dx_bola=0;
 var dy_bola=0;
 
+
+//aro: x, y, largura, altura
+var aro = [0,0,80,20];
+
+var cesta_lagura= aro[2];
+var cesta_x = aro[1];
+var cesta_y = aro[0]+aro[3];
+var cesta_comprimento =  100; 
+
+
+
+
 var j_was_pressed = false;
 var preparou= false;
+
 
 function gravidade(){
     dy_bola+= 1.5;
@@ -99,7 +114,7 @@ function preparandoJogada(){
 
     c.fillStyle = "white";
 
-    for(let i=1; i<=30; i++){
+    for(let i=1; i<=6; i++){
        
         let t = i*0.3;
 
@@ -140,6 +155,33 @@ function Arremesso(){
 }
 
 
+function gerarPosicaoCesta(){
+    aro[1] = Math.random()*(canvas.height-aro[3]-cesta_comprimento - 100 +1)+100;
+}
+function gerarCesta()
+{
+    aro[0] = canvas.width - aro[2];
+    
+    cesta_lagura= aro[2];
+    cesta_x = aro[0];
+    cesta_y = aro[1]+aro[3];
+
+    c.fillStyle = "orange";
+    c.fillRect(aro[0], aro[1], aro[2], aro[3]);
+
+    c.fillStyle = "white";
+    
+    for(let i=0; i<8; i++){
+        for(let j=0; j<5; j++){
+            if((i%2==0 && j%2==0) || (i%2!=0 && j%2!=0))c.fillRect(cesta_x+cesta_lagura/5*j, cesta_y+cesta_comprimento/8*i, cesta_lagura/5, cesta_comprimento/8);
+        }
+    }
+  
+}
+    
+
+
+
 function animate(){
     
     
@@ -152,11 +194,13 @@ function animate(){
     }
     c.fillStyle = "black";
     c.fillRect(x_pessoa, y_pessoa, pessoa_largura, pessoa_altura);
-    c.fillStyle = "#f10";
+    c.fillStyle = "#eb7434";
     c.beginPath();
     c.arc(x_bola, y_bola, tamanhobola, 0, Math.PI*2, false);
     c.fill();
 
+    gerarCesta();
+    
     if(preparou) Arremesso();
 
 
@@ -178,4 +222,5 @@ function animate(){
     
 }
 
+gerarPosicaoCesta();
 animate();
