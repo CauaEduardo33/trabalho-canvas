@@ -35,31 +35,31 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 var c = canvas.getContext('2d');
 
 const MAX_Velocidade = 200;
-const pessoa_altura = 300;
-const pessoa_largura = 100;
+const pessoa_altura1 = 300;
+const pessoa_largura1 = 100;
 
 
 
 
 var tamanhobola = 25; 
 
-var y_pessoa = canvas.height - 300;
-var x_pessoa = 20;
+var y_pessoa1 = canvas.height - 300;
+var x_pessoa1 = 20;
 
-const posicao_inicial_bola_y = canvas.height - y_pessoa/2
-var y_bola = posicao_inicial_bola_y;
+const posicao_inicial_bola_y = canvas.height - y_pessoa1/2
+var y_bola1 = posicao_inicial_bola_y;
 const posicao_inicial_bola_x = 100+tamanhobola;
-var x_bola = posicao_inicial_bola_x;
-var x_bola_previo=200;
-var y_bola_previo=200;
+var x_bola1 = posicao_inicial_bola_x;
+var x_bola1_previo=200;
+var y_bola1_previo=200;
 
-var x_centro = x_pessoa+100;
-var y_centro = y_pessoa+ pessoa_altura/2;
+var x_centro = x_pessoa1+100;
+var y_centro = y_pessoa1+ pessoa_altura1/2;
 var radius = 50;
 var angle=0;
 var d_vetor= 0;
-var dx_bola=0;
-var dy_bola=0;
+var dx_bola1=0;
+var dy_bola1=0;
 
 
 //aro: x, y, largura, altura
@@ -78,18 +78,55 @@ var preparou= false;
 
 
 function gravidade(){
-    dy_bola+= 1.5;
+    dy_bola1+= 1.5;
 }
 
 function Atrito(){
-    if( Math.abs(dx_bola)>0.5){
-        if((Math.abs(dx_bola)-0.15)<0.5) dx_bola=0;
-        else if(dx_bola<0) dx_bola = dx_bola+0.15;
-        else dx_bola = dx_bola-0.15;
-        console.log(dx_bola);
+    if( Math.abs(dx_bola1)>0.5){
+        if((Math.abs(dx_bola1)-0.15)<0.5) dx_bola1=0;
+        else if(dx_bola1<0) dx_bola1 = dx_bola1+0.15;
+        else dx_bola1 = dx_bola1-0.15;
+        console.log(dx_bola1);
     }
     
 }
+
+function drawBackground(){
+    for(let i=0 ;i*2<canvas.width; i++){
+        c.fillStyle = "rgb(52,"  + (235-i*0.5 ) + ",235";  
+        c.fillRect(i*2, 0, 2, innerHeight);
+    }
+}
+
+function drawPlayer(){
+
+    c.fillStyle = "black";
+    c.fillRect(x_pessoa1, y_pessoa1, pessoa_largura1, pessoa_altura1);
+
+}
+
+function drawBall(){
+    c.fillStyle = "#eb7434";
+    c.beginPath();
+    c.arc(x_bola1, y_bola1, tamanhobola, 0, Math.PI*2, false);
+    c.fill();
+}
+
+function ColisaoBola(d_bola, eixo,pos_eixo_bola = 0, tamanho_bola = tamanhobola ){
+    if(eixo=='x'){  
+    if(Math.abs(d_bola-0.50*d_bola)<0.3 ) d_bola=0;
+        else  d_bola  = -d_bola + 0.50*d_bola;
+    }
+
+    else if(eixo=='y'){
+
+        if(Math.abs(d_bola-0.50*d_bola)<0.5 && (pos_eixo_bola+ tamanho_bola)>=canvas.height) d_bola=0; 
+        else d_bola = -d_bola + 0.50*d_bola;
+    }
+        console.log(d_bola);
+
+        return d_bola;
+    }
 
 function preparandoJogada(){
     
@@ -97,11 +134,11 @@ function preparandoJogada(){
     previous_MouseY = MouseY;
     console.log("angulo:");
     console.log(angle);
-    x_bola_previo = x_bola
-    y_bola_previo = y_bola;
+    x_bola1_previo1 = x_bola1
+    y_bola_previo1 = y_bola1;
 
-    x_bola = x_centro + radius*Math.cos(angle);
-    y_bola = y_centro + radius*Math.sin(angle);
+    x_bola1 = x_centro + radius*Math.cos(angle);
+    y_bola1 = y_centro + radius*Math.sin(angle);
 
     
 
@@ -109,8 +146,8 @@ function preparandoJogada(){
         d_vetor+=1;
     }
 
-    dx_bola = Math.cos(angle)*d_vetor;
-    dy_bola = Math.sin(angle)*d_vetor;
+    dx_bola1 = Math.cos(angle)*d_vetor;
+    dy_bola1 = Math.sin(angle)*d_vetor;
 
     c.fillStyle = "white";
 
@@ -121,36 +158,42 @@ function preparandoJogada(){
         let bola_preview_direcao_x;
         let bola_preview_direcao_y;
 
-        bola_preview_direcao_x = dx_bola*t; 
-        bola_preview_direcao_y = dy_bola*t + 1.5*(t*t)/2;
+        bola_preview_direcao_x = dx_bola1*t; 
+        bola_preview_direcao_y = dy_bola1*t + 1.5*(t*t)/2;
 
         c.beginPath();
-        c.arc(x_bola+bola_preview_direcao_x, y_bola+bola_preview_direcao_y, tamanhobola, 0, Math.PI*2);
+        c.arc(x_bola1+bola_preview_direcao_x, y_bola1+bola_preview_direcao_y, tamanhobola, 0, Math.PI*2);
         c.fill();
     }
        
 }
 
-function Arremesso(){
+function Arremesso(num_bola){
 
-    if(((x_bola + tamanhobola) >= canvas.width || x_bola <=0) && (x_bola_previo+tamanhobola)<canvas.width && x_bola_previo>0){
-        if(Math.abs(dx_bola-0.50*dx_bola)<0.3 ) dx_bola=0;
-        else  dx_bola  = -dx_bola + 0.50*dx_bola;
-        console.log(dx_bola);
+    switch(num_bola){
+        case 1:{
+    if(((x_bola1 + tamanhobola) >= canvas.width || x_bola1 <=0) && (x_bola1_previo+tamanhobola)<canvas.width && x_bola1_previo>0){
+        dx_bola1 = ColisaoBola(dx_bola1, 'x');
     }
        
-    if(( y_bola <=0 || (y_bola + tamanhobola) >= canvas.height) && (y_bola_previo+tamanhobola)<canvas.height && y_bola_previo>0){
-        if(Math.abs(dy_bola-0.50*dy_bola)<0.5 && (y_bola + tamanhobola)>=canvas.height) dy_bola=0; 
-        else dy_bola = -dy_bola + 0.50*dy_bola;
-        console.log(dy_bola);
+    if(( y_bola1 <=0 || (y_bola1 + tamanhobola) >= canvas.height) && (y_bola1_previo+tamanhobola)<canvas.height && y_bola1_previo>0){
+        
+        dy_bola1 = ColisaoBola(dy_bola1, 'y',y_bola1, tamanhobola);
         
     }
 
-    x_bola_previo = x_bola;
-    y_bola_previo = y_bola;
-    x_bola += dx_bola;
-    y_bola += dy_bola;
-
+    x_bola1_previo = x_bola1;
+    y_bola1_previo = y_bola1;
+    x_bola1 += dx_bola1;
+    y_bola1 += dy_bola1;
+    break;
+       }
+    
+       default:
+        console.log("invalid num_bola");
+        break;
+    
+    }
     
 }
 
@@ -188,21 +231,13 @@ function animate(){
     
     requestAnimationFrame(animate);
     c.clearRect(0,0, innerWidth, innerHeight);
-    for(let i=0 ;i*2<canvas.width; i++){
-        c.fillStyle = "rgb(52,"  + (235-i*0.5 ) + ",235";  
-        c.fillRect(i*2, 0, 2, innerHeight);
-    }
-    c.fillStyle = "black";
-    c.fillRect(x_pessoa, y_pessoa, pessoa_largura, pessoa_altura);
-    c.fillStyle = "#eb7434";
-    c.beginPath();
-    c.arc(x_bola, y_bola, tamanhobola, 0, Math.PI*2, false);
-    c.fill();
-
+    
+    drawBackground();
+    drawPlayer();
+    drawBall();
     gerarCesta();
     
-    if(preparou) Arremesso();
-
+    if(preparou) Arremesso(1);
 
    else if(teclas["j"] || teclas["J"]){
     preparandoJogada();    
@@ -215,8 +250,8 @@ function animate(){
       
     }
 
-    if(y_bola<(canvas.height-tamanhobola) && preparou) gravidade();
-    if(preparou && (y_bola+tamanhobola)>= canvas.height) Atrito();
+    if(y_bola1<(canvas.height-tamanhobola) && preparou) gravidade();
+    if(preparou && (y_bola1+tamanhobola)>= canvas.height) Atrito();
 
     
     
