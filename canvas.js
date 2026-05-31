@@ -358,6 +358,7 @@ function switchPlayers(){
 function reinicializarJogo(){
     jogoIniciado = false;
     JogoFinalizado = false;
+    player = 1;
     reinicializarJogador();
     pontos1 = 0;
     pontos2 = 0;
