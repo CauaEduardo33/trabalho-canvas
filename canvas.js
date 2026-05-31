@@ -208,7 +208,7 @@ function playerMovement() {
 
     // Movimento horizontal com limite nas bordas do campo
     if ((teclas["a"] || teclas["A"]) && (x_pessoa - 1.5) > 0) x_pessoa -= 1.5;
-    if ((teclas["d"] || teclas["D"]) && (x_pessoa + pessoa_largura + 2 * tamanhobola + 1.5) < (canvas.width - cesta_lagura - 20)) x_pessoa += 1.5;
+    if ((teclas["d"] || teclas["D"]) && (x_pessoa + pessoa_largura) < (onepoint_bckg[2])) x_pessoa += 1.5;
 
     // Enquanto não está arremessando, mantém a bola colada ao jogador
     if (!preparou) {
