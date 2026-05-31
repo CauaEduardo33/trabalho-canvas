@@ -34,6 +34,7 @@ document.addEventListener("mousemove", function(event) {
     MouseY = event.clientY - rect.top;
     // Evita salto brusco no primeiro movimento
     if (primeiro_movimento) {
+
         previous_MouseY = MouseY;
         primeiro_movimento = false;
     }
@@ -95,9 +96,9 @@ var dx_bola = 0;
 var dy_bola = 0;
 
 // Regiões do fundo com cores diferentes indicando valor dos pontos
-var twopoints_bckg = [0, 0, canvas.width * 0.25, canvas.height, "#1E3A8A"];      // vale 2 pontos
-var onepoint_bckg  = [canvas.width * 0.25, 0, canvas.width * 0.5, canvas.height, "#3B82F6"]; // vale 1 ponto
-var cesta_bckg     = [canvas.width * 0.5, 0, canvas.width, canvas.height, "#627D93"]; // área da cesta
+var twopoints_bckg = [0, 0, canvas.width * 0.25, canvas.height, "#015828"];      // vale 2 pontos
+var onepoint_bckg  = [canvas.width * 0.25, 0, canvas.width * 0.5, canvas.height, "#00c44b"]; // vale 1 ponto
+var cesta_bckg     = [canvas.width * 0.5, 0, canvas.width, canvas.height, "#000000"]; // área da cesta
 
 // Dados do aro: [x, y, largura, altura]
 var aro = [0, 0, 80, 20];
@@ -132,8 +133,8 @@ function Atrito() {
 // Desenha o fundo, variando conforme o estado do jogo
 function drawBackground() {
     if (!jogoIniciado || JogoFinalizado) {
-        c.fillStyle = "#3B82F6";
-        c.fillRect(0, 0, canvas.width, canvas.height);
+        const bckg_img = document.getElementById("background");
+        c.drawImage(bckg_img, 0, 0, canvas.width, canvas.height);
         return;
     }
     c.fillStyle = twopoints_bckg[4];
@@ -350,32 +351,19 @@ function escreverPontuacao() {
 var jogoIniciado = false;
 var JogoFinalizado = false;
 
-function escreverNomeJogo(){
-    c.fillStyle = "white";
-    c.font = "40px impact";
-    c.textAlign = "center";
-    c.textBaseline = "middle";
-    const x = canvas.width/2;
-    const y = 20;
-    c.fillText("Lance ou danse", x, y);
-    c.fillStyle = "#eb7434";
-    c.beginPath();
-    c.arc(x, 100, 50, 0, Math.PI*2);
-    c.fill();
 
-    
-}
 
 // Tela inicial: aguarda o jogador escolher o modo
 function selectMode() {
 
-    escreverNomeJogo();
+    musica();
+    
     c.fillStyle = "white";
     c.font = "20px impact";
     const texto_selectmode = "Pressione 1 para single player ou pressione 2 para multijogador";
     c.textAlign = "center";
     c.textBaseline = "middle";
-    c.fillText(texto_selectmode, canvas.width / 2, canvas.height / 2);
+    c.fillText(texto_selectmode, canvas.width / 2, canvas.height-40);
 
     if (teclas["1"]) { mode = 1; jogoIniciado = true; }
     else if (teclas["2"]) { mode = 2; jogoIniciado = true; }
@@ -411,12 +399,19 @@ function finaldeJogo() {
     }
     texto_fim_de_jogo = texto_fim_de_jogo + "Pressione 's' para começar outra partida";
 
+    c.font = "20px impact";
     c.fillStyle = "white";
     c.textAlign = "center";
     c.textBaseline = "middle";
-    c.fillText(texto_fim_de_jogo, canvas.width / 2, canvas.height / 2);
+    c.fillText(texto_fim_de_jogo, canvas.width / 2, canvas.height-40 );
 
     if (teclas["s"] || teclas["S"]) reinicializarJogo();
+}
+
+function musica()
+{
+    const musica = document.getElementById("lanceoudance");
+    musica.play();
 }
 
 // Loop principal do jogo, chamado a cada frame pelo requestAnimationFrame
@@ -473,6 +468,6 @@ function animate() {
     }
 }
 
-// Inicializa a cesta e começa o loop do jogo
+// Inicializa  a cesta e começa o loop do jogo
 gerarPosicaoCesta();
 animate();
