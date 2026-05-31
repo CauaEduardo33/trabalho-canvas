@@ -1,4 +1,4 @@
-# Lance ou danse 🏀
+# Lance ou dance 🏀
 Jogo desenvolvido como trabalho na disciplina de Desenvolvimento de Aplicativos.
 
 ## Regras e Jogabillidade
